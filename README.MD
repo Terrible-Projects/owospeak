@@ -4,7 +4,7 @@ Ever wanted to creep your friends out by converting your messages into the furry
 
 # Installation
 
-We have made it as simple as possible to get started! All you have to do is: `npm install owospeak`
+We have made it as simple as possible to get started! All you have to do is: `npm install owospeak` or `yarn add owospeak` or `pnpm add owospeak`.
 
 # Example Usage
 
