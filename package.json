@@ -1,6 +1,6 @@
 {
   "name": "owospeak",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "p-pwease owo my uwu~ UwU",
   "main": "dist/index.js",
   "scripts": {
@@ -17,5 +17,13 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^4.3.5"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terrible-projects/owospeak.git"
+  },
+  "bugs": {
+    "url": "https://github.com/terrible-projects/owospeak/issues"
+  },
+  "homepage": "https://github.com/terrible-projects/owospeak#readme"
 }

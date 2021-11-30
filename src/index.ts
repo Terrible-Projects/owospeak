@@ -25,64 +25,35 @@ export = function (
       return (args[index] = item);
 
     const replace = [
-      { search: "r", replace: "w" },
-      { search: "l", replace: "w" },
+      { search: /[lr]/g, replace: "w" },
+      { search: /[LR]/g, replace: "W" },
       { search: "ock", replace: "awk" },
       { search: "uck", replace: "ek" },
       { search: "qu", replace: "qw" },
-      { search: "no", replace: "nyo" },
-      { search: "na", replace: "nya" },
-      { search: "nu", replace: "nyu" },
-      { search: "ni", replace: "nyi" },
-      { search: "ou", replace: "u" },
+      { search: /n(?=[oaui])/gi, replace: "$&y" },
+      { search: /o(?=u)/gi, replace: "" },
       { search: "qu", replace: "kw" },
-      { search: "ck", replace: "kk" },
-      { search: "ce", replace: "se" },
-      { search: "ci", replace: "si" },
-      { search: "cy", replace: "sy" },
-      { search: "ca", replace: "ka" },
-      { search: "cb", replace: "kb" },
-      { search: "cc", replace: "kk" },
-      { search: "cd", replace: "kd" },
-      { search: "cf", replace: "kf" },
-      { search: "cg", replace: "kg" },
-      { search: "cj", replace: "kj" },
-      { search: "cl", replace: "kl" },
-      { search: "cm", replace: "km" },
-      { search: "cn", replace: "kn" },
-      { search: "co", replace: "ko" },
-      { search: "cp", replace: "kp" },
-      { search: "cr", replace: "kr" },
-      { search: "cs", replace: "ks" },
-      { search: "ct", replace: "kt" },
-      { search: "cu", replace: "ku" },
-      { search: "cv", replace: "kv" },
-      { search: "cw", replace: "kw" },
-      { search: "cx", replace: "ks" },
-      { search: "cz", replace: "kz" },
-      { search: "qu", replace: "kw" },
-      { search: "xz", replace: "za" },
-      { search: "xe", replace: "ze" },
-      { search: "xi", replace: "zi" },
-      { search: "xo", replace: "zu" },
-      { search: "xu", replace: "aks" },
-      { search: "ax", replace: "eks" },
-      { search: "ex", replace: "iks" },
-      { search: "ix", replace: "oks" },
-      { search: "ox", replace: "uks" },
-      { search: "ux", replace: "egza" },
-      { search: "exa", replace: "egzi" },
-      { search: "exi", replace: "egzu" },
+      { search: /c(?=[ckabdfgjlmnoprstuvwsz])/g, replace: "k" },
+      { search: /c(?=[CKABDFGJLMNOPRSTUVWSZ])/g, replace: "K" },
+      { search: /c(?=[iyIY])/g, replace: "s" },
+      { search: /C(?=[iyIY])/g, replace: "S" },
+      { search: /x(?=[aeiou])/gi, replace: "z" },
+      { search: /(?<=[aeiou])x/gi, replace: "ks" },
+      { search: /(?<=ex)(?=[ai])/gi, replace: "z" },
     ];
 
     replace.forEach(function (item, index) {
-      edit = edit.split(item.search).join(item.replace);
-      edit = edit
-        .split(item.search.toUpperCase())
-        .join(item.replace.toUpperCase());
-      edit = edit
-        .split(switchFirst(item.search))
-        .join(switchFirst(item.replace));
+      if (typeof item.search === "string") {
+        edit = edit
+          .split(item.search.toUpperCase())
+          .join(item.replace.toUpperCase());
+        edit = edit
+          .split(switchFirst(item.search))
+          .join(switchFirst(item.replace));
+        edit = edit.split(item.search).join(item.replace);
+      } else {
+        edit = edit.replace(item.search, item.replace);
+      }
     });
 
     const firstChar = edit.charAt(0);
