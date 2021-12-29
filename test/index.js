@@ -1,3 +1,3 @@
 const owospeak = require("../pkg/");
 
-console.log(owospeak.convert("https://superfi.re d s"));
+console.log(owospeak.convert("asdfsadf https://superfi.re d s dsfs wew f"));

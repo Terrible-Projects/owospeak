@@ -2,6 +2,7 @@ mod utils;
 
 use wasm_bindgen::prelude::*;
 use regex::Regex;
+use rand::Rng;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -42,23 +43,79 @@ pub fn convert(input: &str) -> String {
 
     let mut input_no_url = input_array_url_removed.clone().collect::<Vec<&str>>().join(" ");
 
-    // input_no_url = input_array_url_removed.clone().map(|x| "test").collect::<Vec<&str>>().join(" ");
+    input_no_url = input_array_url_removed.clone().map(|x| "test").collect::<Vec<&str>>().join(" ");
     
-    let edited;
+    let mut edited;
     if input_array.clone().collect::<String>().len() != input_array_url_removed.collect::<String>().len() {
         let mut edited_array = input_no_url.split_whitespace();
-        let mut current_index = 0;
         edited = input_array.map(|x| {
             let mut current_word = x.to_string();
             if !url_regex.is_match(x) {
-                current_word = edited_array.nth(current_index).unwrap().to_string();
-                current_index += 1;
+                current_word = edited_array.next().unwrap().to_string();
             }
             current_word
         }).collect::<Vec<String>>().join(" ");
     } else {
         edited = input_no_url
     }
-    
+
+    if rand::random() {
+        edited += " ";
+        edited += &face();
+    }
+
     return edited;
+}
+
+struct Face {
+    left: Option<String>,
+    right: Option<String>,
+    face: Option<String>,
+    tilde: bool,
+    blush: bool,
+    stripe: bool,
+}
+
+pub fn face() -> String {
+    let faces = [
+        Face{left: Some(">".to_string()), right: Some("<".to_string()), face: None, tilde: true, blush: true, stripe: true},
+        Face{left: None, right: None, face: Some(">".to_string()), tilde: true, blush: true, stripe: true},
+        Face{left: None, right: None, face: Some("<".to_string()), tilde: true, blush: true, stripe: true},
+        Face{left: None, right: None, face: Some("^".to_string()), tilde: false, blush: false, stripe: true},
+        Face{left: None, right: None, face: Some("-".to_string()), tilde: false, blush: true, stripe: false},
+        Face{left: None, right: None, face: Some("~".to_string()), tilde: false, blush: true, stripe: false},
+        Face{left: None, right: None, face: Some(".".to_string()), tilde: false, blush: false, stripe: true},
+        Face{left: None, right: None, face: Some(",".to_string()), tilde: false, blush: false, stripe: true},
+        Face{left: None, right: None, face: Some(";".to_string()), tilde: true, blush: false, stripe: true},
+        Face{left: None, right: None, face: Some("T".to_string()), tilde: true, blush: false, stripe: false},
+        Face{left: None, right: None, face: Some("Y".to_string()), tilde: true, blush: false, stripe: false},
+        Face{left: None, right: None, face: Some("O".to_string()), tilde: false, blush: true, stripe: true},
+        Face{left: None, right: None, face: Some("U".to_string()), tilde: false, blush: true, stripe: true},
+    ];
+
+    let face = faces.iter().nth(rand::thread_rng().gen_range(0..faces.len())).unwrap();
+
+    let mut connector = "w";
+    let mut blush = "";
+    let mut end = "";
+
+    if face.stripe && face.tilde && rand::thread_rng().gen_range(0..6) == 0 {
+        if rand::random() {
+            connector = "-";
+        } else {
+            connector = "~";
+        }
+    }
+
+    let left;
+    let right;
+    if face.left != None && face.right != None {
+        left = face.left;
+        right = face.right;
+    } else if face.face != None {
+        left = face.face;
+        right = face.face;
+    }
+
+    return (left + blush + connector + blush + right + end).to_string();
 }
