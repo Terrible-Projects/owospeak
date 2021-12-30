@@ -43,8 +43,12 @@ pub fn convert(input: &str) -> String {
 
     let mut input_no_url = input_array_url_removed.clone().collect::<Vec<&str>>().join(" ");
 
-    input_no_url = input_array_url_removed.clone().map(|x| "test").collect::<Vec<&str>>().join(" ");
+    // Put Filters Here
+
     
+    
+    // End Filters
+
     let mut edited;
     if input_array.clone().collect::<String>().len() != input_array_url_removed.collect::<String>().len() {
         let mut edited_array = input_no_url.split_whitespace();
@@ -105,17 +109,40 @@ pub fn face() -> String {
         } else {
             connector = "~";
         }
+    } else if face.stripe || face.tilde && rand::thread_rng().gen_range(0..6) == 0 {
+        if face.stripe {
+            connector = "-";
+        } else {
+            connector = "~";
+        }
+    }
+
+    if face.blush && rand::thread_rng().gen_range(0..6) == 0 {
+        blush = "//";
+    }
+
+    if rand::thread_rng().gen_range(0..6) == 0 {
+        end = "\"";
     }
 
     let left;
     let right;
     if face.left != None && face.right != None {
-        left = face.left;
-        right = face.right;
+        left = &face.left;
+        right = &face.right;
     } else if face.face != None {
-        left = face.face;
-        right = face.face;
+        left = &face.face;
+        right = &face.face;
+    } else {
+        return "".to_string();
     }
 
-    return (left + blush + connector + blush + right + end).to_string();
+    let mut result = left.as_deref().unwrap().to_owned();
+    result.push_str(blush);
+    result.push_str(connector);
+    result.push_str(blush);
+    result.push_str(right.as_deref().unwrap());
+    result.push_str(end);
+
+    return result;
 }
