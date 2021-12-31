@@ -1,6 +1,9 @@
 mod utils;
 
+extern crate serde;
+
 use wasm_bindgen::prelude::*;
+use serde::{Serialize, Deserialize};
 use regex::Regex;
 use rand::Rng;
 
@@ -28,9 +31,25 @@ extern "C" {
     fn log_many(a: &str, b: &str);
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct Options {
+    pub stutter: Option<bool>,
+    pub tilde: Option<bool>,
+}
+
 #[wasm_bindgen]
-pub fn convert(input: &str) -> String {
+pub fn convert(input: &str, options: &JsValue) -> String {
     utils::set_panic_hook();
+    
+    let opts: Options;
+    if options != &JsValue::undefined() {
+        opts = options.into_serde().unwrap();
+    } else {
+        opts = Options {
+            stutter: None,
+            tilde: None,
+        };
+    }
 
     let url_regex = Regex::new(r"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&//=]*)").unwrap();
 
@@ -40,14 +59,30 @@ pub fn convert(input: &str) -> String {
     if !Regex::new(r"[a-zA-Z]").unwrap().is_match(&input_array_url_removed.clone().collect::<Vec<&str>>().join(" ")) {
         return input.to_string();
     }
-
+    
     let mut input_no_url = input_array_url_removed.clone().collect::<Vec<&str>>().join(" ");
-
+    
     // Put Filters Here
-
+    
     
     
     // End Filters
+    
+    if opts.stutter.is_none() || opts.stutter.unwrap() {
+        let edited_array = input_no_url.split_whitespace().map(|x| {
+            let mut edited_word = x.to_string();
+            if edited_word.len() > 2 && rand::thread_rng().gen_range(0..6) == 0 {
+                let mut char_insert = edited_word.chars().nth(0).unwrap().to_string();
+                if edited_word.chars().nth(1).unwrap().to_string() == "h" {
+                    char_insert.push_str("h");
+                }
+                char_insert.push_str("-");
+                edited_word = char_insert.to_owned() + &edited_word;
+            }
+            edited_word
+        }).collect::<Vec<String>>();
+        input_no_url = edited_array.join(" ");
+    }
 
     let mut edited;
     if input_array.clone().collect::<String>().len() != input_array_url_removed.collect::<String>().len() {
@@ -61,6 +96,10 @@ pub fn convert(input: &str) -> String {
         }).collect::<Vec<String>>().join(" ");
     } else {
         edited = input_no_url
+    }
+
+    if opts.tilde.is_none() || opts.tilde.unwrap() {
+        edited += "~";
     }
 
     if rand::random() {
@@ -127,10 +166,10 @@ pub fn face() -> String {
 
     let left;
     let right;
-    if face.left != None && face.right != None {
+    if face.left.is_some() && face.right.is_some() {
         left = &face.left;
         right = &face.right;
-    } else if face.face != None {
+    } else if face.face.is_some() {
         left = &face.face;
         right = &face.face;
     } else {
