@@ -1,5 +1,7 @@
 const owospeak = require("../pkg/");
 
 console.log(
-  owospeak.convert("asdfsadf https://superfi.re ddsa sasda dsfs wew fqwe")
+  owospeak.convert(
+    "asdflLRf https://superfi.re ddsa no no no no no no no no no no no no no no no no no no no no no no no no no no no no no you no no no no no no no no no no no no no no no no no no no no no no no no no no dsfs wLw fqwe"
+  )
 );

@@ -63,8 +63,19 @@ pub fn convert(input: &str, options: &JsValue) -> String {
     let mut input_no_url = input_array_url_removed.clone().collect::<Vec<&str>>().join(" ");
     
     // Put Filters Here
-    
-    
+
+    input_no_url = utils::replace_regex(r"(?-i)[lr]", &input_no_url, "w");
+    input_no_url = utils::replace_regex(r"(?-i)[LR]", &input_no_url, "W");
+    input_no_url = input_no_url.replace("ock", "awk");
+    input_no_url = input_no_url.replace("uck", "ek");
+    input_no_url = input_no_url.replace("qu", "qw");
+    for (i, x) in Regex::new(r"n[oaui]").unwrap().find_iter(&input_no_url.clone()).enumerate() {
+        input_no_url.insert_str(x.start() + 1 + i, "y");
+    }
+    for (i, x) in Regex::new(r"ou").unwrap().find_iter(&input_no_url.clone()).enumerate() {
+        input_no_url.remove(x.start() - i);
+    }
+    input_no_url = input_no_url.replace("qu", "kw");
     
     // End Filters
     
