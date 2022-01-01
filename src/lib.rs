@@ -51,7 +51,7 @@ pub fn convert(input: &str, options: &JsValue) -> String {
         };
     }
 
-    let url_regex = Regex::new(r"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&//=]*)").unwrap();
+    let url_regex = Regex::new(r"(?i)https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&//=]*)").unwrap();
 
     let input_array = input.split_whitespace();
     let input_array_url_removed = input_array.clone().filter(|x| !url_regex.is_match(x));
@@ -66,16 +66,33 @@ pub fn convert(input: &str, options: &JsValue) -> String {
 
     input_no_url = utils::replace_regex(r"(?-i)[lr]", &input_no_url, "w");
     input_no_url = utils::replace_regex(r"(?-i)[LR]", &input_no_url, "W");
-    input_no_url = input_no_url.replace("ock", "awk");
-    input_no_url = input_no_url.replace("uck", "ek");
-    input_no_url = input_no_url.replace("qu", "qw");
-    for (i, x) in Regex::new(r"n[oaui]").unwrap().find_iter(&input_no_url.clone()).enumerate() {
-        input_no_url.insert_str(x.start() + 1 + i, "y");
+    input_no_url = utils::replace_regex_match_case(r"(?i)ock", &input_no_url, "awk");
+    input_no_url = utils::replace_regex_match_case(r"(?i)uck", &input_no_url, "ek");
+    input_no_url = utils::replace_regex_match_case(r"(?i)qu", &input_no_url, "qw");
+    for (i, x) in Regex::new(r"(?i)n[oaui]").unwrap().find_iter(&input_no_url.clone()).enumerate() {
+        input_no_url.insert_str(x.start() + 1 + i, &utils::match_case(&input_no_url.chars().nth(x.start() + 1 + i).unwrap().to_string(), "y"));
     }
-    for (i, x) in Regex::new(r"ou").unwrap().find_iter(&input_no_url.clone()).enumerate() {
+    for (i, x) in Regex::new(r"(?i)ou").unwrap().find_iter(&input_no_url.clone()).enumerate() {
         input_no_url.remove(x.start() - i);
     }
-    input_no_url = input_no_url.replace("qu", "kw");
+    input_no_url = utils::replace_regex_match_case(r"(?i)qu", &input_no_url, "kw");
+    for x in Regex::new(r"(?i)c[ckabdfgjlmnoprstuvwsz]").unwrap().find_iter(&input_no_url.clone()) {
+        input_no_url.insert_str(x.start() + 1, &utils::match_case(&input_no_url.chars().nth(x.start()).unwrap().to_string(), "k"));
+        input_no_url.remove(x.start());
+    }
+    for x in Regex::new(r"(?i)c[iy]").unwrap().find_iter(&input_no_url.clone()) {
+        input_no_url.insert_str(x.start() + 1, &utils::match_case(&input_no_url.chars().nth(x.start()).unwrap().to_string(), "s"));
+        input_no_url.remove(x.start());
+    }
+    for x in Regex::new(r"(?i)x[aeiou]").unwrap().find_iter(&input_no_url.clone()) {
+        input_no_url.insert_str(x.start() + 1, &utils::match_case(&input_no_url.chars().nth(x.start()).unwrap().to_string(), "z"));
+        input_no_url.remove(x.start());
+    }
+    for (i, x) in Regex::new(r"(?i)[aeiou]x").unwrap().find_iter(&input_no_url.clone()).enumerate() {
+        input_no_url.insert_str(x.end() + i, &utils::match_case(&input_no_url.chars().nth(x.end() - 1 + i).unwrap().to_string(), "ks"));
+        input_no_url.remove(x.end() - 1 + i);
+    }
+
     
     // End Filters
     
