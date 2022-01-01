@@ -11,10 +11,16 @@ We have made it as simple as possible to get started! All you have to do is: `np
 ```js
 const owospeak = require("owospeak");
 
-owospeak("Funny e621 cheese grater image", { stutter: false, tilde: true });
+owospeak.convert("Funny e621 cheese grater image", {
+  stutter: false,
+  tilde: true,
+});
 // Funny e621 cheese gwatew image~
 
-owospeak("Funny e621 cheese grater image", { stutter: true, tilde: false });
+owospeak.convert("Funny e621 cheese grater image", {
+  stutter: true,
+  tilde: false,
+});
 // Funny e621 cheese g-gwatew i-image >w>
 ```
 
