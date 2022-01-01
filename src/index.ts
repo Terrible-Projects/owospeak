@@ -1,5 +1,10 @@
-import { checkLetter, switchFirst } from "./util";
-import faces from "./faces";
+import face from "./face";
+import { random, replaceRegexMatchCase, addCharToRegexMatch } from "./util";
+
+interface Options {
+  stutter: boolean;
+  tilde: boolean;
+}
 
 /**
  *
@@ -8,83 +13,63 @@ import faces from "./faces";
  * @param {boolean} options.stutter - Whether or not to add a chance to stutter
  * @param {boolean} options.tilde - Whether or not to add a tilde at the end of every message
  */
-export = function (
+export function convert(
   message: string,
-  options: { stutter: boolean; tilde: boolean } = { stutter: true, tilde: true }
+  options: Partial<Options> = { stutter: true, tilde: true }
 ) {
-  const args = message.split(" ");
+  const opts: Options = {
+    stutter: true,
+    tilde: true,
+    ...options,
+  };
 
-  args.forEach(function (item, index) {
-    let edit = item;
+  const inputArray = message.split(/\s+/);
+  const inputArrayURLRemoved = inputArray.filter(
+    (word) =>
+      !word.match(
+        /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)/
+      )
+  );
 
-    if (
-      new RegExp(
-        "([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?"
-      ).test(edit)
-    )
-      return (args[index] = item);
+  if (inputArrayURLRemoved.length <= 0) return message;
 
-    const replace = [
-      { search: /[lr]/g, replace: "w" },
-      { search: /[LR]/g, replace: "W" },
-      { search: "ock", replace: "awk" },
-      { search: "uck", replace: "ek" },
-      { search: "qu", replace: "qw" },
-      { search: /n(?=[oaui])/gi, replace: "$&y" },
-      { search: /o(?=u)/gi, replace: "" },
-      { search: "qu", replace: "kw" },
-      { search: /c(?=[ckabdfgjlmnoprstuvwsz])/g, replace: "k" },
-      { search: /c(?=[CKABDFGJLMNOPRSTUVWSZ])/g, replace: "K" },
-      { search: /c(?=[iyIY])/g, replace: "s" },
-      { search: /C(?=[iyIY])/g, replace: "S" },
-      { search: /x(?=[aeiou])/gi, replace: "z" },
-      { search: /(?<=[aeiou])x/gi, replace: "ks" },
-      { search: /(?<=ex)(?=[ai])/gi, replace: "z" },
-    ];
+  let edited = inputArrayURLRemoved.join(" ");
 
-    replace.forEach(function (item, index) {
-      if (typeof item.search === "string") {
-        edit = edit
-          .split(item.search.toUpperCase())
-          .join(item.replace.toUpperCase());
-        edit = edit
-          .split(switchFirst(item.search))
-          .join(switchFirst(item.replace));
-        edit = edit.split(item.search).join(item.replace);
-      } else {
-        edit = edit.replace(item.search, item.replace);
+  // Put Filters Here
+
+  edited = edited.replace(/[lr]/g, "w");
+  edited = edited.replace(/[LR]/g, "W");
+  edited = replaceRegexMatchCase(/ock/gi, edited, "awk");
+  edited = replaceRegexMatchCase(/uck/gi, edited, "ek");
+  edited = replaceRegexMatchCase(/qu/gi, edited, "qw");
+  edited = addCharToRegexMatch(/(?<=n)[oaui]/gi, edited, "y");
+  edited = edited.replace(/o(?=u)/gi, "");
+  edited = replaceRegexMatchCase(/qu/gi, edited, "kw");
+  edited = replaceRegexMatchCase(/c(?=[ckabdfgjlmnoprstuvwsz])/gi, edited, "k");
+  edited = replaceRegexMatchCase(/c(?=[iy])/gi, edited, "s");
+  edited = replaceRegexMatchCase(/x(?=[aeiou])/gi, edited, "z");
+  edited = replaceRegexMatchCase(/(?<=[aeiou])x/gi, edited, "ks");
+  edited = addCharToRegexMatch(/(?<=[ex])[ai]/gi, edited, "z");
+
+  // End Filters
+
+  if (opts.stutter) {
+    let editedArray = edited.split(" ").map((x) => {
+      if (x.length > 2 && random(5)) {
+        let charInsert = x[0];
+        if (x[1] == "h") charInsert += "h";
+        x = charInsert + "-" + x;
       }
+      return x;
     });
+    edited = editedArray.join(" ");
+  }
 
-    const firstChar = edit.charAt(0);
-    const secondChar = edit.charAt(1);
+  if (opts.tilde) edited += "~";
 
-    if (options.stutter) {
-      if (
-        checkLetter(firstChar) &&
-        checkLetter(secondChar) &&
-        checkLetter(edit.charAt(2))
-      ) {
-        let slice = 1;
-        let newChar = firstChar;
-        if (secondChar.toLowerCase() == "h") {
-          newChar += secondChar;
-          slice = 2;
-        }
-        if (Math.random() < 0.2) {
-          newChar += "-" + newChar;
-        }
-        edit = newChar + edit.slice(slice);
-      }
-    }
+  if (Math.random() < 0.5) edited += " " + face();
 
-    args[index] = edit;
-  });
-  let edit = args.join(" ");
+  return edited;
+}
 
-  if (options.tilde) edit += "~";
-
-  if (Math.random() < 0.5) edit += " " + faces();
-
-  return edit;
-};
+export { face };
