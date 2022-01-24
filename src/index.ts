@@ -45,11 +45,15 @@ export function convert(
   edited = addCharToRegexMatch(/(?<=n)[oaui]/gi, edited, "y");
   edited = edited.replace(/o(?=u)/gi, "");
   edited = replaceRegexMatchCase(/qu/gi, edited, "kw");
-  edited = replaceRegexMatchCase(/c(?=[ckabdfgjlmnoprstuvwsz])/gi, edited, "k");
-  edited = replaceRegexMatchCase(/c(?=[iy])/gi, edited, "s");
+  edited = replaceRegexMatchCase(
+    /c(?=[ackabdfgjlmnoprstuvwsz])/gi,
+    edited,
+    "k"
+  );
+  edited = replaceRegexMatchCase(/c(?=[eiy])/gi, edited, "s");
   edited = replaceRegexMatchCase(/x(?=[aeiou])/gi, edited, "z");
   edited = replaceRegexMatchCase(/(?<=[aeiou])x/gi, edited, "ks");
-  edited = addCharToRegexMatch(/(?<=[ex])[ai]/gi, edited, "z");
+  edited = addCharToRegexMatch(/(?<=ex)[aiu]/gi, edited, "z");
 
   // End Filters
 
