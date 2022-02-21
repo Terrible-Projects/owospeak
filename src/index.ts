@@ -2,16 +2,15 @@ import face from "./face";
 import { random, replaceRegexMatchCase, addCharToRegexMatch } from "./util";
 
 interface Options {
+  /** Whether or not to add a chance to stutter */
   stutter: boolean;
+  /** Whether or not to add a tilde at the end of every message */
   tilde: boolean;
 }
 
 /**
- *
  * @param {message} message - The message to convert
  * @param {Object} options - Options for converting the message
- * @param {boolean} options.stutter - Whether or not to add a chance to stutter
- * @param {boolean} options.tilde - Whether or not to add a tilde at the end of every message
  */
 export function convert(
   message: string,
@@ -51,15 +50,15 @@ export function convert(
     "k"
   );
   edited = replaceRegexMatchCase(/c(?=[eiy])/gi, edited, "s");
-  edited = replaceRegexMatchCase(/x(?=[aeiou])/gi, edited, "z");
   edited = replaceRegexMatchCase(/(?<=[aeiou])x/gi, edited, "ks");
+  edited = replaceRegexMatchCase(/x(?=[aeiou])/gi, edited, "z");
   edited = addCharToRegexMatch(/(?<=ex)[aiu]/gi, edited, "z");
 
   // End Filters
 
   if (opts.stutter) {
     let editedArray = edited.split(" ").map((x) => {
-      if (x.length > 2 && random(5)) {
+      if (x.length > 2 && /[a-z]{2,}.*/ && random(5)) {
         let charInsert = x[0];
         if (x[1] == "h") charInsert += "h";
         x = charInsert + "-" + x;
