@@ -23,18 +23,19 @@ export function replaceRegexMatchCase(
   replacement: string
 ): string {
   let edited = input;
-  let edited_strings: string[] = [];
+  // let edited_strings: string[] = [];
   let match;
   while ((match = regex.exec(edited)) !== null) {
-    const matchedString = edited.substring(
-      match.index,
-      match.index + match[0].length
-    );
-    if (edited_strings.includes(matchedString)) continue;
-    edited_strings.push(matchedString);
-    edited = edited
-      .split(matchedString)
-      .join(matchCase(matchedString, replacement));
+    // const matchedString = edited.substring(
+    //   match.index,
+    //   match.index + match[0].length
+    // );
+    // if (edited_strings.includes(matchedString)) continue;
+    // edited_strings.push(matchedString);
+    edited =
+      edited.slice(0, match.index) +
+      replacement +
+      edited.slice(match.index + match[0].length);
   }
   return edited;
 }
