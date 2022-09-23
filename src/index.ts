@@ -44,12 +44,8 @@ export function convert(
   edited = addCharToRegexMatch(/(?<=n)[oaui]/gi, edited, "y");
   edited = edited.replace(/o(?=u)/gi, "");
   edited = replaceRegexMatchCase(/qu/gi, edited, "kw");
-  edited = replaceRegexMatchCase(
-    /c(?=[ackabdfgjlmnoprstuvwsz])/gi,
-    edited,
-    "k"
-  );
   edited = replaceRegexMatchCase(/c(?=[eiy])/gi, edited, "s");
+  edited = replaceRegexMatchCase(/c(?!h)/gi, edited, "k");
   edited = replaceRegexMatchCase(/(?<=[aeiou])x/gi, edited, "ks");
   edited = replaceRegexMatchCase(/x(?=[aeiou])/gi, edited, "z");
   edited = addCharToRegexMatch(/(?<=ex)[aiu]/gi, edited, "z");
